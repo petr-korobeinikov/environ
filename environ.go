@@ -16,11 +16,21 @@ func E(name string) *Environ {
 	}
 }
 
-func (e *Environ) Default(interface{}) *Environ {
+func (e *Environ) Default(v interface{}) *Environ {
+	switch v.(type) {
+	case string:
+		s := v.(string)
+		e.defaultString = &s
+	}
+
 	return e
 }
 
 func (e *Environ) AsString() (string, error) {
+	if !e.found && e.defaultString != nil {
+		return *e.defaultString, nil
+	}
+
 	if !e.found {
 		return "", ErrEnvVarNotSet
 	}
@@ -55,6 +65,8 @@ func (e *Environ) AsDuration() (time.Duration, error) {
 type Environ struct {
 	raw   string
 	found bool
+
+	defaultString *string
 }
 
 var (

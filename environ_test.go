@@ -30,6 +30,29 @@ func TestEnviron_AsString(t *testing.T) {
 
 		assert.ErrorIs(t, err, ErrEnvVarNotSet)
 	})
+
+	t.Run(`default`, func(t *testing.T) {
+		t.Run(`for unset var`, func(t *testing.T) {
+			const e = "ENV_STRING_NOT_SET_USE_DEFAULT"
+
+			actual, err := E(e).Default("Hello, environ!").AsString()
+
+			assert.NoError(t, err)
+			assert.Equal(t, "Hello, environ!", actual)
+		})
+
+		t.Run(`for set var ignore default`, func(t *testing.T) {
+			const e = "ENV_STRING_SET_DO_NOT_USE_DEFAULT"
+
+			os.Setenv(e, "Hello, environ!")
+			defer os.Unsetenv(e)
+
+			actual, err := E(e).Default("Hello, world!").AsString()
+
+			assert.NoError(t, err)
+			assert.Equal(t, "Hello, environ!", actual)
+		})
+	})
 }
 
 func TestEnviron_AsInt(t *testing.T) {
