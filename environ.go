@@ -17,19 +17,15 @@ func E(name string) *Environ {
 }
 
 func (e *Environ) Default(v interface{}) *Environ {
-	switch v.(type) {
+	switch v := v.(type) {
 	case string:
-		s := v.(string)
-		e.defaultString = &s
+		e.defaultString = &v
 	case int:
-		i := v.(int)
-		e.defaultInt = &i
+		e.defaultInt = &v
 	case float64:
-		f := v.(float64)
-		e.defaultFloat = &f
+		e.defaultFloat = &v
 	case time.Duration:
-		d := v.(time.Duration)
-		e.defaultDuration = &d
+		e.defaultDuration = &v
 	}
 
 	return e
