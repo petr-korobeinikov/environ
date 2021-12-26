@@ -24,6 +24,9 @@ func (e *Environ) Default(v interface{}) *Environ {
 	case int:
 		i := v.(int)
 		e.defaultInt = &i
+	case float64:
+		f := v.(float64)
+		e.defaultFloat = &f
 	}
 
 	return e
@@ -54,6 +57,10 @@ func (e *Environ) AsInt() (int, error) {
 }
 
 func (e *Environ) AsFloat() (float64, error) {
+	if !e.found && e.defaultFloat != nil {
+		return *e.defaultFloat, nil
+	}
+
 	if !e.found {
 		return 0, ErrEnvVarNotSet
 	}
@@ -75,6 +82,7 @@ type Environ struct {
 
 	defaultString *string
 	defaultInt    *int
+	defaultFloat  *float64
 }
 
 var (
