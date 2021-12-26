@@ -22,6 +22,14 @@ func TestEnviron_AsString(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "foo_value", actual)
 	})
+
+	t.Run(`negative`, func(t *testing.T) {
+		const e = "ENV_STRING_NOT_SET"
+
+		_, err := E(e).AsString()
+
+		assert.ErrorIs(t, err, ErrEnvVarNotSet)
+	})
 }
 
 func TestEnviron_AsInt(t *testing.T) {
@@ -35,6 +43,14 @@ func TestEnviron_AsInt(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, 42, actual)
+	})
+
+	t.Run(`negative`, func(t *testing.T) {
+		const e = "ENV_INT_NOT_SET"
+
+		_, err := E(e).AsInt()
+
+		assert.ErrorIs(t, err, ErrEnvVarNotSet)
 	})
 }
 
@@ -50,6 +66,14 @@ func TestEnviron_AsFloat(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 4.2, actual)
 	})
+
+	t.Run(`negative`, func(t *testing.T) {
+		const e = "ENV_FLOAT_NOT_SET"
+
+		_, err := E(e).AsFloat()
+
+		assert.ErrorIs(t, err, ErrEnvVarNotSet)
+	})
 }
 
 func TestEnviron_AsDuration(t *testing.T) {
@@ -63,5 +87,13 @@ func TestEnviron_AsDuration(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, 42*time.Second, actual)
+	})
+
+	t.Run(`negative`, func(t *testing.T) {
+		const e = "ENV_DURATION_NOT_SET"
+
+		_, err := E(e).AsDuration()
+
+		assert.ErrorIs(t, err, ErrEnvVarNotSet)
 	})
 }
