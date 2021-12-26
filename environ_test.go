@@ -165,4 +165,27 @@ func TestEnviron_AsDuration(t *testing.T) {
 
 		assert.ErrorIs(t, err, ErrEnvVarNotSet)
 	})
+
+	t.Run(`default`, func(t *testing.T) {
+		t.Run(`for unset var`, func(t *testing.T) {
+			const e = "ENV_DURATION_NOT_SET_USE_DEFAULT"
+
+			actual, err := E(e).Default(42 * time.Second).AsDuration()
+
+			assert.NoError(t, err)
+			assert.Equal(t, 42*time.Second, actual)
+		})
+
+		t.Run(`for set var ignore default`, func(t *testing.T) {
+			const e = "ENV_DURATION_SET_DO_NOT_USE_DEFAULT"
+
+			os.Setenv(e, "42s")
+			defer os.Unsetenv(e)
+
+			actual, err := E(e).Default(1337 * time.Second).AsDuration()
+
+			assert.NoError(t, err)
+			assert.Equal(t, 42*time.Second, actual)
+		})
+	})
 }

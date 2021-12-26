@@ -27,6 +27,9 @@ func (e *Environ) Default(v interface{}) *Environ {
 	case float64:
 		f := v.(float64)
 		e.defaultFloat = &f
+	case time.Duration:
+		d := v.(time.Duration)
+		e.defaultDuration = &d
 	}
 
 	return e
@@ -69,6 +72,10 @@ func (e *Environ) AsFloat() (float64, error) {
 }
 
 func (e *Environ) AsDuration() (time.Duration, error) {
+	if !e.found && e.defaultDuration != nil {
+		return *e.defaultDuration, nil
+	}
+
 	if !e.found {
 		return 0, ErrEnvVarNotSet
 	}
@@ -80,9 +87,10 @@ type Environ struct {
 	raw   string
 	found bool
 
-	defaultString *string
-	defaultInt    *int
-	defaultFloat  *float64
+	defaultString   *string
+	defaultInt      *int
+	defaultFloat    *float64
+	defaultDuration *time.Duration
 }
 
 var (
