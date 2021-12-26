@@ -75,6 +75,29 @@ func TestEnviron_AsInt(t *testing.T) {
 
 		assert.ErrorIs(t, err, ErrEnvVarNotSet)
 	})
+
+	t.Run(`default`, func(t *testing.T) {
+		t.Run(`for unset var`, func(t *testing.T) {
+			const e = "ENV_INT_NOT_SET_USE_DEFAULT"
+
+			actual, err := E(e).Default(42).AsInt()
+
+			assert.NoError(t, err)
+			assert.Equal(t, 42, actual)
+		})
+
+		t.Run(`for set var ignore default`, func(t *testing.T) {
+			const e = "ENV_INT_SET_DO_NOT_USE_DEFAULT"
+
+			os.Setenv(e, "1337")
+			defer os.Unsetenv(e)
+
+			actual, err := E(e).Default("42").AsInt()
+
+			assert.NoError(t, err)
+			assert.Equal(t, 1337, actual)
+		})
+	})
 }
 
 func TestEnviron_AsFloat(t *testing.T) {

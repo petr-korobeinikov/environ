@@ -21,6 +21,9 @@ func (e *Environ) Default(v interface{}) *Environ {
 	case string:
 		s := v.(string)
 		e.defaultString = &s
+	case int:
+		i := v.(int)
+		e.defaultInt = &i
 	}
 
 	return e
@@ -39,6 +42,10 @@ func (e *Environ) AsString() (string, error) {
 }
 
 func (e *Environ) AsInt() (int, error) {
+	if !e.found && e.defaultInt != nil {
+		return *e.defaultInt, nil
+	}
+
 	if !e.found {
 		return 0, ErrEnvVarNotSet
 	}
@@ -67,6 +74,7 @@ type Environ struct {
 	found bool
 
 	defaultString *string
+	defaultInt    *int
 }
 
 var (
