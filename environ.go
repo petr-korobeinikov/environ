@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -52,7 +53,30 @@ func (e *Environ) AsInt() (int, error) {
 		return 0, ErrEnvVarNotSet
 	}
 
-	return strconv.Atoi(e.raw)
+	const (
+		hexPrefix = "0x"
+		octPrefix = "0"
+	)
+
+	var (
+		base   int
+		prefix string
+	)
+
+	switch {
+	default:
+		base = 10
+	case strings.HasPrefix(strings.ToLower(e.raw), hexPrefix):
+		base = 16
+		prefix = hexPrefix
+	case strings.HasPrefix(strings.ToLower(e.raw), octPrefix):
+		base = 8
+		prefix = octPrefix
+	}
+
+	i, err := strconv.ParseInt(strings.TrimPrefix(e.raw, prefix), base, strconv.IntSize)
+
+	return int(i), err
 }
 
 func (e *Environ) AsFloat() (float64, error) {

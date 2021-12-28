@@ -76,6 +76,30 @@ func TestEnviron_AsInt(t *testing.T) {
 		assert.ErrorIs(t, err, ErrEnvVarNotSet)
 	})
 
+	t.Run(`octal`, func(t *testing.T) {
+		const e = "ENV_INT_OCTAL"
+
+		os.Setenv(e, "0755")
+		defer os.Unsetenv(e)
+
+		actual, err := E(e).AsInt()
+
+		assert.NoError(t, err)
+		assert.Equal(t, 0755, actual)
+	})
+
+	t.Run(`hexadecimal`, func(t *testing.T) {
+		const e = "ENV_INT_HEXADECIMAL"
+
+		os.Setenv(e, "0xDEADBEEF")
+		defer os.Unsetenv(e)
+
+		actual, err := E(e).AsInt()
+
+		assert.NoError(t, err)
+		assert.Equal(t, 0xDEADBEEF, actual)
+	})
+
 	t.Run(`default`, func(t *testing.T) {
 		t.Run(`for unset var`, func(t *testing.T) {
 			const e = "ENV_INT_NOT_SET_USE_DEFAULT"
