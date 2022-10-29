@@ -27,6 +27,8 @@ func (e *Environ) Default(v interface{}) *Environ {
 		e.defaultFloat = &v
 	case time.Duration:
 		e.defaultDuration = &v
+	case bool:
+		e.defaultBool = &v
 	}
 
 	return e
@@ -103,6 +105,18 @@ func (e *Environ) AsDuration() (time.Duration, error) {
 	return time.ParseDuration(e.raw)
 }
 
+func (e *Environ) AsBool() (bool, error) {
+	if !e.found && e.defaultBool != nil {
+		return *e.defaultBool, nil
+	}
+
+	if !e.found {
+		return false, ErrEnvVarNotSet
+	}
+
+	return strconv.ParseBool(e.raw)
+}
+
 type Environ struct {
 	raw   string
 	found bool
@@ -111,6 +125,7 @@ type Environ struct {
 	defaultInt      *int
 	defaultFloat    *float64
 	defaultDuration *time.Duration
+	defaultBool     *bool
 }
 
 var (

@@ -31,4 +31,9 @@ f, err := environ.E("FOO").Default(4.2).AsFloat()
 // export FOO=42s
 d, err := environ.E("FOO").AsDuration()
 d, err := environ.E("FOO").Default(3 * time.Second).AsDuration()
+
+// bool support
+// export FOO=1
+b, err := environ.E("FOO").AsBool()
+b, err := environ.E("FOO").Default(true).AsBool()
 ```

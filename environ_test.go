@@ -213,3 +213,48 @@ func TestEnviron_AsDuration(t *testing.T) {
 		})
 	})
 }
+
+func TestEnviron_AsBool(t *testing.T) {
+	t.Run(`positive`, func(t *testing.T) {
+		const e = "ENV_BOOL"
+
+		os.Setenv(e, "1")
+		defer os.Unsetenv(e)
+
+		actual, err := E(e).AsBool()
+
+		assert.NoError(t, err)
+		assert.True(t, actual)
+	})
+
+	t.Run(`negative`, func(t *testing.T) {
+		const e = "ENV_BOOL_NOT_SET"
+
+		_, err := E(e).AsBool()
+
+		assert.ErrorIs(t, err, ErrEnvVarNotSet)
+	})
+
+	t.Run(`default`, func(t *testing.T) {
+		t.Run(`for unset var`, func(t *testing.T) {
+			const e = "ENV_BOOL_NOT_SET_USE_DEFAULT"
+
+			actual, err := E(e).Default(true).AsBool()
+
+			assert.NoError(t, err)
+			assert.True(t, actual)
+		})
+
+		t.Run(`for set var ignore default`, func(t *testing.T) {
+			const e = "ENV_BOOL_SET_DO_NOT_USE_DEFAULT"
+
+			os.Setenv(e, "0")
+			defer os.Unsetenv(e)
+
+			actual, err := E(e).Default(true).AsBool()
+
+			assert.NoError(t, err)
+			assert.False(t, actual)
+		})
+	})
+}
